@@ -983,7 +983,15 @@ contains
              create_fission_neutrons)
       end if
     end if
-
+    
+    ! Check for total or prompt nu run
+    tot_nu = TOTAL_NU
+    if (check_for_node(root, "tot_nu")) then
+      call get_node_value(root, "tot_nu", tot_nu)
+        if (.not.(tot_nu == TOTAL_NU .or. tot_nu == PROMPT_NU)) then
+          call fatal_error("tot_nu has to be either prompt or total.")
+        end if
+    end if
     ! Close settings XML file
     call doc % clear()
 
@@ -5206,7 +5214,7 @@ contains
           group_id = open_group(file_id, name)
           call nuclides(i_nuclide) % from_hdf5(group_id, nuc_temps(i_nuclide), &
                temperature_method, temperature_tolerance, temperature_range, &
-               master)
+               master, tot_nu)
           call close_group(group_id)
           call file_close(file_id)
 

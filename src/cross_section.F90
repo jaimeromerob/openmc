@@ -178,7 +178,11 @@ contains
 
         if (nuc % fissionable) then
           micro_xs(i_nuclide) % fission = sigF
-          micro_xs(i_nuclide) % nu_fission = sigF * nuc % nu(E, EMISSION_TOTAL)
+            if (tot_nu == TOTAL_NU) then
+              micro_xs(i_nuclide) % nu_fission = sigF * nuc % nu(E, EMISSION_TOTAL)
+            else
+              micro_xs(i_nuclide) % nu_fission = sigF * nuc % nu(E, EMISSION_PROMPT)
+          end if
         else
           micro_xs(i_nuclide) % fission    = ZERO
           micro_xs(i_nuclide) % nu_fission = ZERO
@@ -565,8 +569,13 @@ contains
 
       ! Determine nu-fission cross section
       if (nuc % fissionable) then
-        micro_xs(i_nuclide) % nu_fission = nuc % nu(E, EMISSION_TOTAL) * &
-             micro_xs(i_nuclide) % fission
+        if (tot_nu == TOTAL_NU) then
+          micro_xs(i_nuclide) % nu_fission = nuc % nu(E, EMISSION_TOTAL) * &
+               micro_xs(i_nuclide) % fission
+        else
+          micro_xs(i_nuclide) % nu_fission = nuc % nu(E, EMISSION_PROMPT) * &
+               micro_xs(i_nuclide) % fission
+        end if
       end if
     end associate
 
